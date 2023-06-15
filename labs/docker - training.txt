@@ -1,0 +1,421 @@
+https://download.docker.com/linux/
+
+
+dnf repolist
+dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+dnf repolist
+dnf repoinfo docker-ce-stable
+
+dnf install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+dnf install -y --allowerasing docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+
+
+systemctl list-unit-files | grep -i docker
+systemctl list-unit-files | grep -i container
+
+
+### Docker installation will create a group but will not add any users to it
+cat /etc/group
+
+docker version
+docker info
+
+
+systemctl start docker 					### Conatinaerd will statrt automaitcally
+systemctl status docker
+systemctl enable docker 
+systemctl status containerd
+
+
+docker ps 						### show only running containers
+docker ps -a					### show all containers
+
+
+docker images
+docker images -a
+
+docker pull alpine:latest
+
+
+
+docker images
+docker image inspect alpine
+
+docker run alpine
+docker ps -a
+docker ps
+
+
+
+
+
+
+
+
+
+docker images
+docker image ls
+docker ps -a
+docker pull nginx:latest
+docker images
+docker run nginx
+docker ps -a
+docker exec 3f62239dbf21 hostname
+docker exec -it c9f6ac650e8d /bin/bash
+
+### Execute these inside the container
+hostname
+df -h
+cat /etc/debian_version
+cd /usr/share/nginx/html
+cat index.html
+
+### Execute these on the host machine
+ps -ef | grep -i nginx 				
+netstat -ntlp 
+
+
+
+
+
+docker stop 3f62239dbf21
+docker ps -a
+docker run --name "nginx-latest" nginx
+docker run -d --name "nginx-latest" nginx
+docker run -d --name "nginx-latest" -p 80:80 nginx
+netstat -ntlp
+
+### Access the nginx lnading page from the host
+### From web browser --> http://192.168.56.10/
+
+docker stop c9f6ac650e8d
+docker ps -a
+docker rm c9f6ac650e8d
+docker ps -a
+docker image rm alpine
+						
+docker ps -aq
+docker rm $(docker ps -aq)
+
+
+
+
+
+
+
+
+
+
+docker run -dit --name alpine2 alpine ash
+docker attach alpine1
+
+
+
+
+
+
+
+================================================================
+
+docker pull rockylinux:9.1
+docker container run 656f801c021c
+docker ps -a
+
+docker container run -dit 656f801c021c
+docker ps -a
+docker attach 7d7b85880e87
+docker stop 7d7b85880e87
+
+
+# https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user
+usermod -aG docker lalindra
+cat /etc/group
+
+
+
+docker image history  656f801c021c
+
+docker image build -t "mynginx:1.0" .
+docker image build -t lalindrait/lvrocky91:1.0 -t lalindrait/lvrocky91:1.0 .
+
+docker container run -dit mynginx:1.1
+
+
+docker exec -it 0b6acf21a462 /bin/bash
+
+docker image inspect mynginx:1.0
+docker run -d --name "mynginx-latest" -p 9000:80 nginx:1.0
+
+docker container stop 0b6acf21a462
+docker container rm 0b6acf21a462
+docker image rm mynginx:1.0
+
+
+
+=====================================================
+
+docker image ls
+docker tag lvnginx:1.0 lalindrait/lvnginx:1.0
+docker login -u lalindrait
+docker push lalindrait/lvnginx:1.0
+
+
+docker pull lalindrait/lvnginx:1.0
+docker run -d --name "mynginx-latest" -p 9000:80 lalindrait/lvnginx:1.0
+
+
+
+docker login -u lalindrait
+dckr_pat_rvIih6G-Ir5ztkEESyIqpA8yslA
+
+
+
+dckr_pat_rvIih6G-Ir5ztkEESyIqpA8yslA
+
+docker login -u lalindrait
+docker system info | grep -E 'Username|Registry'
+docker logout
+docker system info | grep -E 'Username|Registry'
+
+
+
+
+
+=================================================
+
+
+docker info |grep 'Docker Root Dir'
+docker system info | grep -i Root
+
+
+
+docker image history lvnginx:1.0
+
+
+
+
+Images
+================
+================
+
+docker image --help 	
+
+docker images          # List current images in the docker host
+docker images -a 	   # Show all images (default hides intermediate images) 
+
+
+### New usage of the command
+docker image ls 				# Above is an alias to this command
+docker image ls -a 				# Above is an alias to this command
+
+docker image inspect lvnginx:1.0 		# Show details about the image
+docker image history nginx:latest 		# List how the image was built
+
+docker image rm alpine:latest   # Remove the image from docker host
+
+
+
+docker push lalindrait/lvnginx:1.0 		# Push image to Docker Hub with a tag
+
+docker image ls --digests
+
+docker tag lalindrait/alpine-nginx:1.0 lalindrait/alpine-nginx:1.1
+
+
+curl 'https://registry.hub.docker.com/v2/repositories/library/alpine/tags/'|jq '."results"[]["name"]'
+
+
+docker image rm alpine:3.18
+docker image rm -f alpine:3.18 					# Delete an image forcefully
+docker image rm $(docker image ls -q) -f 		# Delete all image in the host
+
+
+docker tag lalindrait/alpine-nginx:1.0 lalindrait/alpine-nginx:1.1
+docker tag 08ed4f5f854e lalindrait/alpine-nginx:1.2
+
+=================================================
+
+docker build -t username/image_name:tag_name .
+
+docker build -t lalindrait/alpine-nginx:1.0 -t lalindrait/alpine-nginx:latest .
+
+
+
+
+====== Private registry =================
+
+
+
+
+======== Module 4 - Containers ============
+
+
+
+docker image ls 		# List images in the local host
+docker search alpine 	# Search Docker Hub
+
+### Can go to Docler Hub and search for a image
+
+
+
+
+
+
+### These 2 run commands are idential docker run is an alias
+### Running the alpine
+docker run alpine:3.18 				#This will pull the image not available locally
+docker container run alpine:3.18
+docker ps -a
+
+### You can pull seperately
+docker image pull alpine:3.17
+
+### Running the nginx
+docker container run nginx:latest 			# Run in the foreground
+docker container run -d nginx:latest 		# Run in the background as a daemon
+docker ps -a 								# Docker will assing a random name	
+
+docker container stop 708a8721c8e3
+docker container run -d --name "mynginx" nginx:latest 	# Assiging a name to the container
+
+
+docker container stop 708a8721c8e3
+docker ps -a 
+docker container start 542379d22ede 		# Start a container
+docker container stop 708a8721c8e3
+docker container rm 542379d22ede
+
+
+
+docker container run -d --name "mynginx" -p 9000:80 nginx:latest
+netstat -ntlp 				# Execute on the Docker host
+### From web browser go to http://192.168.56.10:9000
+
+
+
+docker container stop mynginx
+docker container rm mynginx
+
+### To remvoe all containers
+docker container rm $(docker container ps -aq)
+
+docker image rm nginx:latest 			# Remove image in the host
+
+
+
+
+
+
+docker volume create myvol
+docker volume ls
+docker volume inspect myvol
+
+docker volume prune 	# Delete all volume not mounted into a container
+docker volume rm myvol  # Remove a volume if not mounted in a container
+
+
+docker volume create myvol
+docker volume ls
+docker image ls
+docker container run -dit --name mynginx --mount source=myvol,target=/vol lalindrait/alpine-nginx:1.0
+
+docker exec -it f7057df3f912 /bin/sh
+
+cd /vol 							# Execute inside the container
+touch temp.txt 						# Execute inside the container
+exit 								# Execute inside the container
+
+docker container stop f7057df3f912
+cd /var/lib/docker/volumes/myvol/_data 		# Go to the volume's local directory
+ls -l
+
+
+docker container rm mynginx
+docker volume ls
+ls -l /var/lib/docker/volumes/myvol/_data/ 		# Verify that data still exists
+
+
+
+======= Module 6 - Networking ========
+
+
+dnf install bridge-utils
+brctl show
+
+
+
+
+docker network ls
+docker network rm mybridge
+docker network create -d bridge mybridge
+docker network inspect mybridge
+brctl show | column -t
+
+
+docker container run -dit --name "myrocky" myrocky:1.0
+docker container exec -it b952440e171b /bin/bash
+
+### Exeute from inside the container
+ip a
+
+ping 192.168.56.10 			# Ping the docker host
+ping 4.2.2.2 				# Ping internet
+
+
+
+
+
+docker container run -dit --name "myrocky" --network mybridge myrocky:1.0
+docker container run -dit --name "myrocky" --network mybridge --publish 5000:80 myrocky:1.0
+docker port myrocky
+
+
+
+
+
+
+
+
+======= Module 7 - Deployments ========
+
+
+dnf list installed | grep -i docker
+dnf install docker-compose-plugin
+docker compose version
+
+docker compose up
+docker container ps -a
+docker image ls
+docker network ls
+docker volume ls
+
+
+
+docker compose up -d
+docker container ps -a
+
+docker compose down
+docker container ps -a
+
+docker compose up -d
+docker compose ps
+docker compose top
+
+docker compose stop
+docker compose ps -a
+
+docker compose start
+docker compose ps -a
+docker compose restart
+
+
+
+
+
+
+
+
+
+
+
