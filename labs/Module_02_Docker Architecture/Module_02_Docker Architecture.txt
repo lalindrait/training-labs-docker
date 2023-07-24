@@ -1,0 +1,48 @@
+### =======================================
+### How Docker Containers Run
+### =======================================
+docker run -d --name "nginx-latest" -p 80:80 nginx
+docker exec -it c9f6ac650e8d /bin/bash
+
+ps -ef | grep nginx
+ps -ef | egrep 'docker|container|shim'
+netstat -l                                  # show unix/raw sockets. run as root.
+ps -ef --forest                             # show ps output in tree format
+
+### =======================================
+### Low-Level Container Runtime - runc
+### =======================================
+
+### Running a container using runc command
+### =======================================
+docker container run --name "myalpine" alpine:3.18
+docker export myalpine > rootfs.tar
+mkdir -p ./rootfs
+tar -xvf rootfs.tar -C ./rootfs
+cd rootfs/
+
+runc spec
+runc run myalpine-runc
+
+runc list
+runc kill myalpine-runc
+
+
+
+### =======================================
+### High-Level Container Runtime - containerd
+### =======================================
+
+### Running a container using ctr command
+### =======================================
+ctr images pull docker.io/library/nginx:latest
+ctr image ls
+
+ctr run -t docker.io/library/nginx:latest myniginx
+ctr container ls
+ctr container info myniginx
+
+ctr task ls
+ctr task kill myniginx
+
+

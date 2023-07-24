@@ -1,0 +1,99 @@
+### =======================================
+### Installing Docker
+### =======================================
+
+
+
+### Step 1 – Install Docker
+### ==========================
+dnf repolist
+dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+dnf repolist
+dnf repoinfo docker-ce-stable
+dnf install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+
+### Step 2 – Verify the installation
+### ================================
+systemctl list-unit-files | grep -i docker
+systemctl list-unit-files | grep -i container
+
+### Docker installation will create a group but will not add any users to it
+cat /etc/group
+
+docker version
+docker info
+
+
+### Step 3 – Start Services
+### =======================
+systemctl start docker 	### Containerd will start automatically
+systemctl status docker
+systemctl status containerd
+
+docker ps 		### show only running containers
+docker ps -a		### show all containers 	
+
+docker images
+docker images –a
+docker image ls				
+
+
+
+
+
+### =======================================
+### Running Your First Docker Container
+### =======================================
+
+
+### Step 1 – Pull image and run the container
+### ==========================================
+docker image ls
+docker ps –a
+
+docker pull nginx:latest
+docker image ls
+docker run nginx
+
+docker ps -a
+docker exec 3f62239dbf21 hostname
+
+docker exec -it c9f6ac650e8d /bin/bash
+### Execute these inside the container
+    hostname
+    df -h
+    cat /etc/debian_version
+    cd /usr/share/nginx/html
+    cat index.html
+
+### Execute these on the host machine
+    ps -ef | grep -i nginx 			
+    netstat -ntlp 
+
+### Step 2 –  Basic Commands and Clean up
+### =====================================
+docker stop 3f62239dbf21
+docker ps –a
+
+docker run --name "nginx-latest" nginx
+docker run -d --name "nginx-latest" nginx
+docker run -d --name "nginx-latest" -p 80:80 nginx
+
+netstat -ntlp
+
+### Access the nginx landing page from the host
+### From web browser --> http://192.168.56.10/
+
+docker stop c9f6ac650e8d
+docker ps -a
+docker rm c9f6ac650e8d
+docker ps -a
+docker image rm alpine					
+
+
+
+
+
+
+

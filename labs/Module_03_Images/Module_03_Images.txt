@@ -1,0 +1,103 @@
+### =======================================
+### Docker Image - Important Commands
+### =======================================
+
+
+### Basic commands
+### =======================================
+docker image --help 	
+
+docker images         	                    # List current images in the docker host
+docker images -a 	                        # Show all images (default hides intermediate images)
+
+### New usage of the command
+docker image ls 		                    # Above is an alias to this command
+docker image ls -a 		                    # Above is an alias to this command
+docker image inspect lvnginx:1.0 	        # Show details about the image
+docker image history nginx:latest 	        # List how the image was built
+docker image rm alpine:latest   	        # Remove the image from docker host
+
+
+
+
+### Docker image - Filtering output
+### =======================================
+# Using filters 
+docker image ls --filter dangling=true
+docker image ls --filter=reference="*:latest"
+docker image ls --format "{{.Size}}"
+docker image ls --format "{{.Repository}}: {{.Tag}}: {{.Size}}"
+
+
+
+
+### Searching Docker Hub
+### =======================================
+docker search lalindrait 	                            # Search the Docker Hub for images
+docker search alpine 	                                # Search the Docker Hub for images
+docker search alpine --filter "is-official=true“ 	    # Can use filters
+
+
+
+
+### Pulling and pushing images
+### =======================================
+docker pull alpine  	                                # Since there is no tag default is to pull the latest image
+docker pull alpine:latest 	                            # This will pull the latest alpine image
+docker pull alpine:edge 	                            # This will pull the alpine image with the tag edge
+ 
+docker pull alpine:3.17.3 		                        # Pull the specific version of the alpine image
+docker pulll lalindrait/lvnginx:1.0 	                # Pulling from a private repo in Docker Hub
+docker image pull -a lalindrait/lvnginx 	            # Pull all the images
+
+docker push lalindrait/lvnginx:1.0 	                    # Push image to Docker Hub with a tag
+
+
+
+
+### Tagging images
+### =======================================
+docker tag lalindrait/alpine-nginx:1.0 lalindrait/alpine-nginx:1.1
+docker tag 08ed4f5f854e lalindrait/alpine-nginx:1.2
+
+
+
+### Deleting images
+### =======================================
+docker image rm alpine:3.18
+docker image rm -f alpine:3.18 		                    # Delete an image forcefully
+docker image rm $(docker image ls -q) -f 		        # Delete all image in the host
+
+
+
+
+
+### =======================================
+### Building a Docker Image
+### =======================================
+
+
+### Step 1 – Write the Dockerfile
+### =======================================
+
+
+
+### Step 2 – Build the Docker image
+### =======================================
+docker image build -t “lvnginx:latest" .
+docker image ls
+docker image inspect lvnginx: latest
+
+
+### Step 3 – Run the container
+### =======================================
+docker run -d --name “lvnginx-latest" -p 9000:80 nginx:1.0
+docker ps -a
+docker exec -it 0b6acf21a462 /bin/bash
+
+
+### Step 4 – Stop and clean up
+### =======================================
+docker container stop 0b6acf21a462
+docker container rm 0b6acf21a462
+docker image rm lvnginx: latest
