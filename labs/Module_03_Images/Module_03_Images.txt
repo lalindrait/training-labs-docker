@@ -17,7 +17,7 @@ docker image inspect lvnginx:1.0 	        # Show details about the image
 docker image history nginx:latest 	        # List how the image was built
 docker image rm alpine:latest   	        # Remove the image from docker host
 
-
+docker manifest inspect nginx               # multi-architecture images
 
 
 ### Docker image - Filtering output
@@ -69,6 +69,14 @@ docker image rm -f alpine:3.18 		                    # Delete an image forcefull
 docker image rm $(docker image ls -q) -f 		        # Delete all image in the host
 
 
+### Delete ganling images
+### =======================================
+docker images --filter "dangling=true"
+
+docker image prune
+docker image prune -f
+docker images --quiet --filter=dangling=true | xargs --no-run-if-empty docker rmi
+
 
 
 
@@ -80,6 +88,21 @@ docker image rm $(docker image ls -q) -f 		        # Delete all image in the hos
 ### Step 1 – Write the Dockerfile
 ### =======================================
 
+FROM rockylinux:9.1
+LABEL Maintainer="LV <admin@lv.com>"
+LABEL Description="Rocky Linux With nginx"
+# Install packages
+RUN dnf install -y iproute && \
+  dnf install -y net-tools && \
+  dnf install -y iputils && \
+  dnf install -y procps-ng && \
+  dnf install -y telnet && \
+  dnf install -y nmap-ncat && \
+  dnf install -y nginx && \
+  rm -f /usr/share/nginx/html/index.html
+COPY files/index.html /usr/share/nginx/html/index.html
+EXPOSE 80
+CMD ["/usr/sbin/nginx", "-g", "daemon off;"]
 
 
 ### Step 2 – Build the Docker image
@@ -101,3 +124,52 @@ docker exec -it 0b6acf21a462 /bin/bash
 docker container stop 0b6acf21a462
 docker container rm 0b6acf21a462
 docker image rm lvnginx: latest
+
+
+### =======================================
+### Pushing Image to Docker Registry
+### =======================================
+
+### Step 1 – Create a new access token in Docker Hub
+### ===============================================
+Go to Docker Hub and get a new access token for your username.
+You can use your login password but using an access token is recommended 
+as it can be revoked at anytime and a new can be created.
+
+Clikd username (top right corner) --> Account Settings --> Security --> New Access Token
+
+
+### Step 2 – Push the image to Docker Hub
+### =======================================
+docker image ls
+docker tag lvnginx:1.0 lalindrait/lvnginx:1.0
+docker login -u lalindrait
+docker push lalindrait/lvnginx:1.0
+
+
+
+### Step 3 – Pull and Run from Docker Hub
+### =======================================
+docker pull lalindrait/lvnginx:1.0
+docker run -d --name "mynginx-latest" -p 9000:80 lalindrait/lvnginx:1.0
+
+
+
+### Step 4 – Logout from Docker Hub
+### =======================================
+docker system info | grep -E 'Username|Registry'
+docker logout
+docker system info | grep -E 'Username|Registry'
+
+
+
+
+
+
+
+
+
+
+
+
+
