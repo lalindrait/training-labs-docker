@@ -1,0 +1,37 @@
+
+### =======================================
+### Using kata runtime
+### =======================================
+
+
+https://docs.docker.com/engine/alternative-runtimes/
+https://github.com/kata-containers/kata-containers/blob/main/docs/install/centos-installation-guide.md
+
+
+
+vi /etc/yum.repos.d/kata-containers.repo
+    [kata-containers]
+    name=Kata Containers
+    baseurl=http://mirror.centos.org/centos-8/8/virt/x86_64/kata-containers/
+    enabled=1
+    gpgcheck=0
+    skip_if_unavailable=1
+
+dnf install -y kata-containers
+kata-runtime --version
+
+dnf install --allowerasing -y kata-runtime
+
+
+vi /etc/docker/daemon.json
+{
+  "default-runtime": "kata-runtime",
+  "runtimes": {
+    "kata-runtime": {
+      "path": "/usr/bin/kata-runtime"
+    }
+  }
+}
+
+systemctl reload docker
+systemctl restart docker

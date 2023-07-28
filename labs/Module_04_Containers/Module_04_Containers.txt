@@ -1,0 +1,139 @@
+### =======================================
+### Running Your First Docker Container
+### =======================================
+
+
+
+### Step 1 – Install Docker
+### =======================================
+Refer to Module 1 – “Running You First Docker Container”
+
+### Step 2 – List and Search for Docker images
+### =======================================
+docker image ls 	# List images in the local host
+docker search alpine 	# Search Docker Hub
+
+### Can go to Docker Hub and search for a image
+
+
+
+### Step 3 – Pull and Run the image
+### =======================================
+### These 2 run commands are identical docker run is an alias
+### Running the alpine
+docker run alpine:3.18 		                                #This will pull the image not available locally
+docker container run alpine:3.18
+docker ps -a
+
+### You can pull separately
+docker image pull alpine:3.17
+
+### Running the nginx
+docker container run nginx:latest 		                            # Run in the foreground
+docker container run -d nginx:latest 		                        # Run in the background as a daemon
+docker ps -a 				                                        # Docker will assign a random name	
+
+docker container stop 708a8721c8e3
+docker container run -d --name "mynginx" nginx:latest 	            # Assigning a name to the container
+
+docker container stop 708a8721c8e3
+docker ps -a 
+docker container start 542379d22ede 		                        # Start a container
+docker container stop 708a8721c8e3
+docker container rm 542379d22ede
+
+docker container run -d --name "mynginx" -p 9000:80 nginx:latest
+netstat -ntlp 				                                        # Execute on the Docker host
+### From web browser go to http://192.168.56.10:9000
+
+
+### Step 4 – Stop and Remove containers & images
+### =======================================
+docker container stop mynginx
+docker container rm mynginx
+
+### To remove all containers
+docker container rm $(docker container ps -aq)
+
+docker image rm nginx:latest 	                                    # Remove image in the host
+
+
+
+
+### =======================================
+### Docker resource management
+### =======================================
+
+### Host commands - Perf monitoring 
+### ===============================================================================
+vmstat 1 					# report every 1 sec
+vmstat -S m 1 				# human readable format every 1 sec
+free -m
+
+top 
+    P - sort by CPU usage (& CPU)
+    M - sort by memory (VIRT)
+    c - show command path 
+    k - kill the process by PID 
+    u - select for a specific user 
+
+top -n 10                   # exit aafter 10 iterations
+top -u lalindra             # processes by a specific user
+
+
+            PID: Shows task’s unique process id.
+            PR: The process’s priority. The lower the number, the higher the priority.
+            VIRT: Total virtual memory used by the task.
+            USER: User name of owner of task.
+            %CPU: Represents the CPU usage.
+            TIME+: CPU Time, the same as ‘TIME’, but reflecting more granularity through hundredths of a second.
+            SHR: Represents the Shared Memory size (kb) used by a task.
+            NI: Represents a Nice Value of task. A Negative nice value implies higher priority, and positive Nice value means lower priority.
+            %MEM: Shows the Memory usage of task.
+            RES: How much physical RAM the process is using, measured in kilobytes.
+            COMMAND: The name of the command that started the process.
+
+
+### Docker - Perf monitoring 
+### ===============================================================================
+docker stats
+docker stats -a                             # include exited containers 
+docker stats lvrocky91
+
+
+docker container stop 9145c971951a | xargs docker container rm
+
+
+### PID Limits
+docker run -itd --name "lvrocky91" -p 80:80 --pids-limit 10 lalindrait/lvrocky91
+docker inspect a7cb0143abd7 | grep -i PidsLimit
+docker stats
+
+exec -it  a5fd508ea632 /bin/bash
+### From inside the container execute some sleep commands to exceed pid limit
+sleep 60 & sleep 60 & sleep 60 & sleep 60 & sleep 60 & 
+
+### CPU Limits
+cat /proc/cpuinfo
+lscpu
+
+docker run -d --name "lvrocky91" --cpus=".5" lalindrait/lvrocky91
+docker run -d --name "lvrocky91" --cpu-shares=2000 lalindrait/lvrocky91
+
+### Memory Limits
+docker run -d --name "lvrocky91" --memory 128m lalindrait/lvrocky91
+docker run -d --name "lvrocky91" --memory 128m --memory-reservation=64m lalindrait/lvrocky91
+
+
+
+### =======================================
+### Docker logs 
+### =======================================
+
+docker run -itd -e POSTGRES_USER=mit -e POSTGRES_PASSWORD=mit123 -p 5432:5432 -v /data:/var/lib/postgresql/data --name mit-postgresql postgres
+docker logs c37470069d57
+docker logs -f c37470069d57
+
+### Location of the cotnainer log file
+cd /var/lib/docker/containers/c37470069d574728b01c2bd7235ad1244c6295b3a6549b89cebe8198cb98b127/
+tail -f c37470069d574728b01c2bd7235ad1244c6295b3a6549b89cebe8198cb98b127-json.log

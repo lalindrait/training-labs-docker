@@ -107,10 +107,11 @@ CMD ["/usr/sbin/nginx", "-g", "daemon off;"]
 
 ### Step 2 – Build the Docker image
 ### =======================================
-docker image build -t “lvnginx:latest" .
+docker image build -t “lvnginx:1.0" .
 docker image ls
-docker image inspect lvnginx: latest
+docker image inspect lvnginx:1.0
 
+docker build -t “lvnginx:1.1" -t “lvnginx:v2307" .
 
 ### Step 3 – Run the container
 ### =======================================
