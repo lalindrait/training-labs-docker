@@ -47,7 +47,13 @@ netstat -ntlp 				                                        # Execute on the Docke
 ### From web browser go to http://192.168.56.10:9000
 
 
-### Step 4 – Stop and Remove containers & images
+### Step 4 – View logs
+### =======================================
+docker logs c37470069d57
+docker logs -f c37470069d57
+
+
+### Step 5 – Stop and Remove containers & images
 ### =======================================
 docker container stop mynginx
 docker container rm mynginx

@@ -1,0 +1,94 @@
+### =======================================
+### Docker Non-Persistent Data 
+### =======================================
+
+docker run -d --name lvrocky91 --mount source=lv_vol_01,target=/vol_01 lalindrait/lvrocky91
+docker exec -it f686a3453b1b /bin/bash
+echo "root data test" > /test.txt
+cat /test.txt
+
+cd /var/lib/docker/overlay2/
+cd f686a3453b1b                     # Use the container ID 
+ls -l 
+
+
+
+### =======================================
+### Creating Docker Volumes
+### =======================================
+
+### Step 1 – Inspect current volume configurations
+### =============================================
+
+docker volume ls
+docker inspect myvol
+
+docker volume prune 		    # Delete all volume not mounted into a container
+docker volume rm myvol   		# Remove a volume if not mounted in a container
+
+
+### Step 2 – Create and attach volume to a container
+### ================================================
+
+docker volume create lv_vol_01
+docker volume ls
+ls -l /var/lib/docker/volumes/
+
+docker run -d --name lvrocky91 --mount source=lv_vol_01,target=/vol_01 lalindrait/lvrocky91
+docker exec -it b4c010bd42c6 /bin/bash
+### Execute from inside the container 
+    df -h
+    cd /vol_01/
+    echo "volume test" > vol-test.txt
+
+### Execute on the host 
+    cd /var/lib/docker/volumes/lv_vol_01/_data/
+    ls
+    cat vol-test.txt
+
+### Step 3 – Mount volume to another container  
+### ==========================================
+
+docker stop b4c010bd42c6
+docker rm b4c010bd42c6
+
+docker volume ls
+ls -l /var/lib/docker/volumes/lv_vol_01/_data/
+
+docker run -d --name nginx --mount source=lv_vol_01,target=/nginx_vol nginx
+docker exec -it 28d7c60ba9da /bin/bash
+cat /nginx_vol/vol-test.txt
+
+
+### Step 4 – Remove volume  
+### ==========================================
+
+docker volume ls
+docker volume rm lv_vol_01
+docker volume ls
+ls -l /var/lib/docker/volumes/
+
+
+### Additional Commands
+### ===================
+
+docker plugin ls                    # show any additional storage plugins installed in the docker host
+
+### =======================================
+### Change Docker Data Root
+### =======================================
+
+mkdir /docker-root
+vi /etc/docker/daemon.json
+    {
+    "data-root": "/docker-root"
+    }   
+
+systemctl stop docker
+systemctl daemon-reload
+rsync -aqxP /var/lib/docker/ /docker-root/
+ls /docker-root/
+systemctl start docker
+
+docker volume ls
+docker run -d --name lvrocky91 --mount source=lv_vol_01,target=/vol_01 lalindrait/lvrocky91
