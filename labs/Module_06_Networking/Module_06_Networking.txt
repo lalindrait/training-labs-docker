@@ -1,0 +1,48 @@
+### =======================================
+### Understanding Docker Networking Basics
+### =======================================
+
+
+
+### Step 1 – Inspect current host network configurations
+### ===============================================
+ip addr
+systemctl start docker
+ip addr
+
+docker network ls
+docker network inspect bridge
+docker network inspect host 
+docker network inspect none
+
+
+### Step 2 – Inspect current container network configurations
+### ===============================================
+
+docker run -d --name "lvrocky91-01" lalindrait/lvrocky91
+ip addr
+docker exec -it ba52d2813242 /bin/bash
+    ### From inside the docker container
+    ip addr
+    netstat -nr
+    cat /etc/resolv.conf
+    cat /etc/hosts
+
+    ###  Check default network connectivity from inside
+    ping 172.17.0.2
+    ping 172.17.0.1
+    ping 192.168.56.10
+    ping 10.0.2.15
+    ping 4.2.2.2
+
+### From the docker hosts
+docker network ls
+docker network inspect bridge
+
+### Start another container 
+docker run -d --name "lvrocky91-02" lalindrait/lvrocky91
+ip addr
+docker exec -it 6f001dac7184 /bin/bash
+    ### From inside the docker container
+    ip addr
+    ping 172.17.0.2
