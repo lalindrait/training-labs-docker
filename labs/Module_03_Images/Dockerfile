@@ -1,5 +1,5 @@
-FROM rockylinux:9.1
-LABEL Maintainer="LV <admin@lv.com>"
+FROM rockylinux:9.2
+LABEL Maintainer="MIT <admin@mitesp.com>"
 LABEL Description="Rocky Linux With nginx"
 # Install packages
 RUN dnf install -y iproute && \
