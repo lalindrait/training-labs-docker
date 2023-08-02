@@ -1,0 +1,23 @@
+### =======================================
+### Understanding Docker Networking Basics
+### =======================================
+
+### Step 1 – Install Docker Compose 
+### ================================
+
+dnf repolist
+dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+dnf repolist
+
+dnf install -y docker-compose-plugin
+dnf list installed | grep -i docker
+docker compose version
+
+
+
+
+
+
+
+
+
