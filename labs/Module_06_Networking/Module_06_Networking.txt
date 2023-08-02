@@ -2,8 +2,6 @@
 ### Understanding Docker Networking Basics
 ### =======================================
 
-
-
 ### Step 1 – Inspect current host network configurations
 ### ===============================================
 ip addr
@@ -39,6 +37,9 @@ docker exec -it ba52d2813242 /bin/bash
 docker network ls
 docker network inspect bridge
 
+### Step 3 – Check connectivity between containers
+### ===============================================
+
 ### Start another container 
 docker run -d --name "lvrocky91-02" lalindrait/lvrocky91
 ip addr
@@ -46,3 +47,80 @@ docker exec -it 6f001dac7184 /bin/bash
     ### From inside the docker container
     ip addr
     ping 172.17.0.2
+
+### Step 4 – Host network 
+### =====================
+docker network ls
+docker run -d --name "lvrocky91-01" --network host lalindrait/lvrocky91:1.1
+docker exec -it 59b003bf2a3a /bin/bash
+    ### From inside the docker container
+    ip addr
+    netstat -nr
+
+### Step 5 – Host network 
+### =====================
+docker network ls
+docker run -d --name "lvrocky91-01" --network none lalindrait/lvrocky91:1.1
+docker exec -it 59b003bf2a3a /bin/bash
+    ### From inside the docker container
+    ip addr
+    netstat -nr
+
+
+### =======================================
+### Creating bridge networks
+### =======================================
+
+
+### Step 1 – Create a bridge network
+### =================================
+docker network create -d bridge lv-bridge
+docker network ls
+ip addr
+brctl show | column -t
+docker network inspect lv-bridge
+
+
+### Step 2 – Check network connectivity
+### =================================
+docker run -d --name "lvrocky91-01" --network lv-bridge lalindrait/lvrocky91:1.1
+docker run -d --name "lvrocky91-02" --network lv-bridge lalindrait/lvrocky91:1.1
+ip addr
+brctl show
+
+docker exec -it aed3432e8412 /bin/bash
+docker exec -it 9bbf5ac9bd4a /bin/bash
+
+    ### From inside the docker container
+    ip addr
+    netstat -nr
+    nslookup google.com
+
+    ping 172.19.0.1
+    ping 172.17.0.1
+    ping 192.168.56.10
+    ping 4.2.2.2
+    ping 172.19.0.3
+
+    nslookup lvrocky91-02
+    ping lvrocky91-02
+
+
+docker network disconnect lv-bridge lvrocky91-02
+    ### From inside the first container try a ping
+    ping lvrocky91-02
+
+
+docker network connect bridge lvrocky91-02
+    ### From inside the container 
+    ip addr
+    ping 172.19.0.2                   
+
+### Step 3 – Remove bridge network
+### =================================
+
+docker network rm lv-bridge
+
+
+
+
