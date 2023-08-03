@@ -35,6 +35,9 @@ docker volume ls
 ls -l /var/lib/docker/volumes/
 
 docker run -d --name lvrocky91 --mount source=lv_vol_01,target=/vol_01 lalindrait/lvrocky91
+OR
+docker run -d --name lvrocky91 -v lv_vol_01:vol_01 lalindrait/lvrocky91
+
 docker exec -it b4c010bd42c6 /bin/bash
 ### Execute from inside the container 
     df -h
@@ -106,6 +109,11 @@ docker exec -it 4b1f15b53fde /bin/bash
 ### ===================
 
 docker plugin ls                    # show any additional storage plugins installed in the docker host
+docker plugin install purestorage/docker-plugin:v3.10
+
+docker ps -s                        # show the size of the container 
+
+
 
 ### =======================================
 ### Change Docker Data Root
