@@ -69,6 +69,39 @@ docker volume ls
 ls -l /var/lib/docker/volumes/
 
 
+### =======================================
+### Creating Bind mounts
+### =======================================
+
+
+### Step 1 - Create a bind mount using --mount
+### ==========================================
+
+mkdir -p /docker/html
+touch index.html
+docker run -d --name lvrocky91 --mount type=bind,source="/docker/html",target="/app" lalindrait/lvrocky91:1.1
+docker exec -it 0213a5a9e514 /bin/bash
+
+### Execute from inside the container 
+    df -h
+    cd app/
+    echo "this is test" > app.txt
+
+
+
+### Step 2 - Create a bind mount using -v
+### ==========================================
+docker run -d --name lvrocky91 -v /docker/html1:/app lalindrait/lvrocky91:1.1
+docker exec -it 4b1f15b53fde /bin/bash
+### Execute from inside the container 
+    df -h
+    cd app/
+    echo "this is test" > app1.txt
+
+
+
+
+
 ### Additional Commands
 ### ===================
 
@@ -92,3 +125,6 @@ systemctl start docker
 
 docker volume ls
 docker run -d --name lvrocky91 --mount source=lv_vol_01,target=/vol_01 lalindrait/lvrocky91
+
+
+
