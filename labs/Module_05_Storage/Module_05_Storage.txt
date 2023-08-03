@@ -8,7 +8,7 @@ echo "root data test" > /test.txt
 cat /test.txt
 
 cd /var/lib/docker/overlay2/
-cd f686a3453b1b                     # Use the container ID 
+cd f686a3453b1b                     
 ls -l 
 
 
@@ -100,9 +100,6 @@ docker exec -it 4b1f15b53fde /bin/bash
     df -h
     cd app/
     echo "this is test" > app1.txt
-
-
-
 
 
 ### Additional Commands
