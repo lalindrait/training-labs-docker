@@ -15,6 +15,12 @@ docker compose version
 
 
 
+### =======================================
+### Understanding Docker Networking Basics
+### =======================================
+
+
+
 
 ### =======================================
 ### Deploy hit-counter app
