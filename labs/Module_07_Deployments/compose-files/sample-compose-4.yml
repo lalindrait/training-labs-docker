@@ -1,0 +1,37 @@
+version: "3.8"
+services:
+  mysql-db:
+    image : mysql:latest
+    volumes:
+      - lv_db_data:/var/lib/mysql
+    networks:
+      - lv-app-net
+    deploy:
+      restart_policy:
+        condition: none
+    secrets:
+      - mysql_user_password
+      - mysql_root_password
+    environment:
+      MYSQL_DATABASE : lvapp-db
+      MYSQL_USER: lvuser
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_user_password
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+
+volumes:
+  lv_db_data:
+    driver: local
+
+networks:
+  lv-app-net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.100.101.0/24"
+
+secrets:
+  mysql_user_password:
+    file: ./secrets/mysql_user_pass.txt
+  mysql_root_password:
+    file: ./secrets/mysql_root_pass.txt

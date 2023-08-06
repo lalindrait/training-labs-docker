@@ -1,0 +1,58 @@
+version: "3.8"
+services:
+  lv-web-fe:
+    image : lalindrait/lvrocky91:1.1
+    ports: 
+      - 8000:80
+    volumes:
+      - lv_vol_01:/vol_01
+      - lv_vol_01:/vol_02
+      - /docker/html:/web
+    networks:
+      - lv-web-dmz
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 50M
+          pids: 10
+  mysql-db:
+    image : mysql:latest 
+    volumes:
+      - lv_db_data:/db_date
+    networks:
+      - lv-app-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 200M
+          pids: 20
+      restart_policy:
+        condition: always
+
+volumes:
+  lv_vol_01:
+    driver: local
+  lv_vol_02:
+    driver: local
+  lv_db_data:
+    driver: local
+
+networks:
+  lv-app-net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.100.100.0/24"
+
+secrets:
+  mysql_user_password:
+    environment: "MYSQL_USER_PASS"
+  mysql_root_password:
+    environment: "MYSQL_ROOT_PASS"
+
+
+
+

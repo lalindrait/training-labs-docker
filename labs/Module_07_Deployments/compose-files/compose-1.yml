@@ -1,0 +1,5 @@
+version: "3.8"
+services:
+  lv-web-fe:
+    image : lalindrait/lvrocky91:1.1
+

@@ -1,0 +1,79 @@
+version: "3.8"
+services:
+  lv-wordpress:
+    image : wordpress:latest
+    depends_on:
+      - lv-mysql-db
+    ports: 
+      - 8000:80
+    volumes:
+      - lv_web_root:/var/www/html
+    networks:
+      - lv-web-dmz
+      - lv-app-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 50M
+          pids: 10
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    secrets:
+      - mysql_user_password
+    environment:
+      WORDPRESS_DB_HOST: lv-mysql-db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD_FILE: /run/secrets/mysql_user_password
+      WORDPRESS_DB_NAME: wordpress
+  lv-mysql-db:
+    image : mysql:latest
+    volumes:
+      - lv_db_data:/var/lib/mysql
+    networks:
+      - lv-app-net
+    deploy:
+      restart_policy:
+        condition: on-failure
+    secrets:
+      - mysql_user_password
+      - mysql_root_password
+    environment:
+      MYSQL_DATABASE : wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_user_password
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+
+
+volumes:
+  lv_web_root:
+    driver: local
+  lv_db_data:
+    driver: local
+
+networks:
+  lv-web-dmz:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.100.100.0/24"
+  lv-app-net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.100.101.0/24"
+
+secrets:
+  mysql_user_password:
+    file: ./secrets/mysql_user_pass.txt
+  mysql_root_password:
+    file: ./secrets/mysql_root_pass.txt
+
+
+
+

@@ -1,5 +1,5 @@
 ### =======================================
-### Understanding Docker Networking Basics
+### Running a container with docker compose
 ### =======================================
 
 ### Step 1 – Install Docker Compose 
@@ -14,13 +14,203 @@ dnf list installed | grep -i docker
 docker compose version
 
 
+### Step 2 – Write the compose file 
+### ================================
+
+### compose-1.yml
+version: "3.8"
+services:
+  lv-web-fe:
+    image : lalindrait/lvrocky91:1.1
+### END OF COMPOSE FILE
+
+### Step 3 – Run the compose file
+### ================================
+
+docker compose up
+docker ps -a
+Ctrl+C                          # This will stop the containers
+
+docker compose -f compose-1.yml up -d
+docker compose -f compose-1.yml down
+docker ps -a
+docker compose -f compose-1.yml ps
+
+
+
+
+
+### compose-2.yml
+version: "3.8"
+services:
+  lv-web-fe:
+    image : lalindrait/lvrocky91:1.1
+    ports: 
+      - 8000:80
+    volumes:
+      - type: volume
+        source: lv_vol_01
+        target: /vol_01
+      - type : bind
+        source : /docker/html
+        target: /web
+
+volumes:
+  lv_vol_01:
+### END OF COMPOSE FILE
+
+
+netstat -ntlp
+docker container inspect 4b318d317cec
+docker volume ls
+## From inside the container 
+    df -h                           # you may not see all mount points in the output
+    cat /proc/mounts
+
+
+docker compose -f compose-2.yml down
+docker volume ls
+
+
+
+
+
+### compose-3.yml
+version: "3.8"
+services:
+  lv-web-fe:
+    image : lalindrait/lvrocky91:1.1
+    ports: 
+      - 8000:80
+    volumes:
+      - lv_vol_01:/vol_01
+      - lv_vol_01:/vol_02
+      - /docker/html:/web
+    networks:
+      - lv-web-dmz
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 50M
+          pids: 10
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+
+
+volumes:
+  lv_vol_01:
+    driver: local
+  lv_vol_02:
+    driver: local
+
+networks:
+  lv-web-dmz:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.100.100.0/24"
+### END OF COMPOSE FILE
+
+
+docker exec -it 042075c05ef3 /bin/bash
+### From inside the container
+    ip addr
+
+
+
+
+
+### compose-4.yml
+version: "3.8"
+services:
+  mysql-db:
+    image : mysql:latest
+    volumes:
+      - lv_db_data:/var/lib/mysql
+    networks:
+      - lv-app-net
+    deploy:
+      restart_policy:
+        condition: none
+    secrets:
+      - mysql_user_password
+      - mysql_root_password
+    environment:
+      MYSQL_DATABASE : lvapp-db
+      MYSQL_USER: lvuser
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_user_password
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+
+volumes:
+  lv_db_data:
+    driver: local
+
+networks:
+  lv-app-net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.100.101.0/24"
+
+secrets:
+  mysql_user_password:
+    file: ./secrets/mysql_user_pass.txt
+  mysql_root_password:
+    file: ./secrets/mysql_root_pass.txt
+### END OF COMPOSE FILE
+
+
+docker exec -it 359364887a81 /bin/bash
+    mysql -u root -p
+    mysql> show databases;
+
+
+
+
+
+
+
+### ===========================================
+### Running a multi-container app - wordpress 
+### ===========================================
+
+
+### Step 1 – Write the compose file
+### ================================
+
+### compose-5-wordpress.yml
+
+
+### Step 1 – Write the compose file
+### ================================
+docker logs -f 285961bd79bc
+docker exec -it 359364887a81 /bin/bash
+    mysql -u root -p
+    mysql> show databases;
+
+### Got to thw wordpress start up page to configure
+http://192.168.56.10:8000/
+
+
+
+
+
+
+
+
+
+
+
 
 ### =======================================
-### Understanding Docker Networking Basics
+### Running a multi-container app docker compose
 ### =======================================
-
-
-
 
 ### =======================================
 ### Deploy hit-counter app

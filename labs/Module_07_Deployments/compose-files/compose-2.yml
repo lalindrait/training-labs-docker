@@ -1,0 +1,18 @@
+version: "3.8"
+services:
+  lv-web-fe:
+    image : lalindrait/lvrocky91:1.1
+    ports: 
+      - "8000:80"
+    volumes:
+      - type: volume
+        source: lv_vol_01
+        target: /vol_01
+      - type : bind
+        source : /docker/html
+        target: /web
+        
+volumes:
+  lv_vol_01:
+
+

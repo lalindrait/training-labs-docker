@@ -1,0 +1,40 @@
+version: "3.8"
+services:
+  lv-web-fe:
+    image : lalindrait/lvrocky91:1.1
+    ports: 
+      - 8000:80
+    volumes:
+      - lv_vol_01:/vol_01
+      - lv_vol_01:/vol_02
+      - /docker/html:/web
+    networks:
+      - lv-web-dmz
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 50M
+          pids: 10
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+
+
+volumes:
+  lv_vol_01:
+    driver: local
+  lv_vol_02:
+    driver: local
+
+networks:
+  lv-web-dmz:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.100.100.0/24"
+
+
