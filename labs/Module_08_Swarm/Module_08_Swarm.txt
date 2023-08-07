@@ -1,0 +1,108 @@
+### =======================================
+### Build a Docker Swarm Cluster
+### =======================================
+
+
+### Step 1 – Install Docker and start services
+### ===========================================
+dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+dnf install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+systemctl start docker
+systemctl enable docker
+
+
+
+### Step 2 – Initiate the swarm cluster
+### ===========================================
+
+docker swarm init --advertise-addr 192.168.56.201:2377 --listen-addr 192.168.56.201:2377
+docker node ls
+
+### Run this on all manager nodes - No need to run on worker nodes
+firewall-cmd --permanent --add-port=2377/tcp; firewall-cmd --reload; firewall-cmd --list-ports
+
+### RUn this on first manager node
+docker swarm join-token manager
+
+### Run this on other manager nodes
+docker swarm join --token SWMTKN-1-3v5cvelkno9onfh2eyaxkg5nepczs7v0z2a7eq6qrfglgxthkw-abznrtdx5ffinz0z0cykyphq5 192.168.56.201:2377
+
+### RUn this on first manager node
+docker swarm join-token worker
+
+### Run this on other worker nodes
+docker swarm join --token SWMTKN-1-3v5cvelkno9onfh2eyaxkg5nepczs7v0z2a7eq6qrfglgxthkw-0jruab12gdro9avdrj4zkfxuu 192.168.56.201:2377
+
+docker node rm pn5ku2g3rplb3xyex3pl6eu0l
+
+
+
+### =======================================
+### Deploy Services to a Swarm Cluster
+### =======================================
+
+### Step 1 – Deploy services
+### =========================
+
+docker service create --name "lv-nginx" -p 8000:80 --replicas 3 nginx:latest
+docker service ls
+docker service ps lv-nginx
+docker service inspect lv-nginx
+
+### Check nginx is accessible from all nodes 
+### running the service 2 x workes and 1 x manager node
+http://192.168.56.211:8000/
+http://192.168.56.212:8000/
+http://192.168.56.203:8000/
+
+docker service scale lv-nginx=6
+docker service ls
+docker service ps lv-nginx
+
+docker service scale lv-nginx=2
+docker service ls
+docker service ps lv-nginx
+
+docker service rm lv-nginx
+docker service ls
+
+
+### Step 2 – Create a overlay network
+### =================================
+
+docker network ls
+docker network create -d overlay lv-network
+docker network ls                                   # new overlay is onlu visible on manager node and is extended to worker node when worloads run
+ip addr                                             # You can see a veth but no containers are running
+docker ps -a
+
+docker service create --name "lv-nginx" --network lv-network -p 8000:80 --replicas 3 nginx:latest
+
+docker service scale lv-nginx=6
+docker network ls                                   # run this on worker nodes
+docker service scale lv-nginx=4
+docker network ls 
+docker service rm lv-nginx
+
+
+docker service create --name "lv-nginx" --network lv-network --publish published=8000,target=80,mode=host --replicas 3 nginx:latest
+
+
+
+### =======================================
+### Do a Rolling update
+### =======================================
+
+### Step 1 – Do a Rolling update
+### ===========================
+
+docker service create --name "lv-nginx" --network lv-network --publish published=8000,target=80,mode=host --replicas 3 nginx:1.24.0
+
+docker service ps lv-nginx
+docker service inspect lv-nginx
+
+docker service update --image nginx:1.25.0 --update-parallelism 2 --update-delay 20s "lv-nginx"
+watch docker service ls
+docker service ps lv-nginx
+
+watch docker service ls
