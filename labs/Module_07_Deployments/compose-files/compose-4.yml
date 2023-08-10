@@ -2,6 +2,8 @@ version: "3.8"
 services:
   lv-web-fe:
     image : lalindrait/lvrocky91:1.1
+    depends_on: 
+      - mysql-db
     ports: 
       - 8000:80
     volumes:
@@ -22,6 +24,9 @@ services:
         delay: 5s
         max_attempts: 3
         window: 120s
+    configs:
+      - source: app_config
+        target: /config
   mysql-db:
     image : mysql:latest
     volumes:
@@ -68,6 +73,10 @@ secrets:
     file: ./secrets/mysql_user_pass.txt
   mysql_root_password:
     file: ./secrets/mysql_root_pass.txt
+
+configs:
+  app_config:
+    file: ./app_config/config.yml
 
 
 

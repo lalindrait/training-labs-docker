@@ -25,16 +25,37 @@ firewall-cmd --permanent --add-port=2377/tcp; firewall-cmd --reload; firewall-cm
 docker swarm join-token manager
 
 ### Run this on other manager nodes
-docker swarm join --token SWMTKN-1-3v5cvelkno9onfh2eyaxkg5nepczs7v0z2a7eq6qrfglgxthkw-abznrtdx5ffinz0z0cykyphq5 192.168.56.201:2377
+docker swarm join --token xxxxxx 192.168.56.201:2377
 
 ### RUn this on first manager node
 docker swarm join-token worker
 
 ### Run this on other worker nodes
-docker swarm join --token SWMTKN-1-3v5cvelkno9onfh2eyaxkg5nepczs7v0z2a7eq6qrfglgxthkw-0jruab12gdro9avdrj4zkfxuu 192.168.56.201:2377
+docker swarm join --token xxxxxxxxx 192.168.56.201:2377
 
 docker node rm pn5ku2g3rplb3xyex3pl6eu0l
 
+### Step 3 – Node management
+### ===========================================
+
+docker node ls
+docker node inspect self --pretty
+docker node inspect worker-1
+docker node inspect worker-1 --pretty
+
+docker node update --availability drain worker-1
+docker node update --availability active worker-1
+
+docker node inspect worker-1 | grep -i Labels
+docker node update --label-add pcidss=true worker-1
+docker node inspect worker-1 | grep -i -A3 Labels
+
+docker node promote worker-1
+docker node demote worker-1
+
+
+docker swarm leave
+docker node rm worker-1
 
 
 ### =======================================
@@ -106,3 +127,41 @@ watch docker service ls
 docker service ps lv-nginx
 
 watch docker service ls
+
+
+
+### =======================================
+### Using docker stack to deploy services
+### =======================================
+
+docker node ls
+docker service ls
+
+docker stack deploy -c nginx-stack-1.yml nginx-stack
+docker stack ls
+docker stack ps nginx-stack
+docker stack services nginx-stack
+docker stack config -c nginx-stack-1.yml
+docker network ls    
+docker volume ls
+
+netstat -ntlp
+
+### on one of the runnin worker nodes
+docker ps -a
+docker exec -it 739173ad7c10 /bin/bash
+df -h
+touch /vole_01/test.txt
+### Go to another worker node and verify the file is not visible
+
+
+
+docker stack rm nginx-stack
+
+docker service ls
+docker service ps nginx-stack_lv-web-fe
+
+
+
+
+

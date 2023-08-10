@@ -29,15 +29,16 @@ services:
 
 docker compose up
 docker ps -a
-Ctrl+C                          # This will stop the containers
+Ctrl+C                                     
 
 docker compose -f compose-1.yml up -d
 docker compose -f compose-1.yml down
-docker ps -a
 docker compose -f compose-1.yml ps
+docker ps -a 
 
-
-
+docker compose -f compose-4.yml up mysql-db -d
+docker compose -f compose-4.yml up lv-web-fe -d
+docker ps -a 
 
 
 ### compose-2.yml

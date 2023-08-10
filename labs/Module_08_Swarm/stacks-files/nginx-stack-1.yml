@@ -1,0 +1,38 @@
+version: "3.8"
+services:
+  lv-web-fe:
+    image : lalindrait/lvrocky91:1.1
+    ports: 
+      - 8000:80
+    volumes:
+      - lv_vol_01:/vol_01
+    networks:
+      - lv-app-net
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 50M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      placement:
+        constraints:
+          - 'node.role == worker'
+
+volumes:
+  lv_vol_01:
+    driver: local
+
+networks:
+  lv-app-net:
+    driver: overlay
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.100.101.0/24"
+
+
