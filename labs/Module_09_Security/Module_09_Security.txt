@@ -1,0 +1,39 @@
+### =======================================
+### Creating Docker Secrets
+### =======================================
+
+
+### Step 1 – Create the secrets
+### ===========================
+
+echo "mysql12345" | docker secret create db_passwd -
+vi mysql-db-pass.txt
+docker secret create db-pass-fromfile ~/mysql-db-pass.txt
+docker secret ls
+docker secret inspect db_passwd
+
+
+### Step 2 – Run service and verify
+### ===============================
+
+docker service  create --name "mit-nginx" --secret db_passwd -p 8000:80 --replicas 1 nginx:1.24.0
+docker service ls
+docker service ps mit-nginx
+
+docker ps -a
+docker exec -it 392239fefcac /bin/bash
+df -h
+cat /run/secrets/db_passwd
+
+### Do the same for secret created from file
+
+
+
+### =======================================
+### Testing DOCKER CONTENT TRUST
+### =======================================
+
+export DOCKER_CONTENT_TRUST=1
+docker image pull lalindrait/lvrocky91:1.2
+docker image pull alpine
+

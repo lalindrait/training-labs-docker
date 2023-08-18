@@ -147,11 +147,11 @@ docker volume ls
 
 netstat -ntlp
 
-### on one of the runnin worker nodes
+### on one of the runninn worker nodes
 docker ps -a
 docker exec -it 739173ad7c10 /bin/bash
 df -h
-touch /vole_01/test.txt
+touch /vol_01/test.txt
 ### Go to another worker node and verify the file is not visible
 
 
@@ -162,6 +162,14 @@ docker service ls
 docker service ps nginx-stack_lv-web-fe
 
 
+### =======================================
+### Dockser Stared Storage
+### =======================================
+
+### These volumes are local. Only accessible with in the host
+docker volume ls
+docker volume create vol-01
+docker volume inspect vol-01
 
 
 
