@@ -1,0 +1,21 @@
+### =======================================
+### Using environment variables and viewing logs
+### =======================================
+
+### Create a .env file
+vi .env
+    MYSQL_ROOT_PASSWORD=mysql12345
+    MYSQL_DATABASE=wordpress
+    MYSQL_USER=worpress
+    MYSQL_PASSWORD=wp12345
+
+### Running container without -d output STDOUT to screen
+docker run --name "mysql-db" --env-file .env mysql
+
+### Clean the mysql directory for the mysql container to run startup script
+rm -rf /var/lib/mysql/*
+### Following will not output any logs to STDOUT to screen
+docker run -d --name "mysql-db" --env-file .env mysql
+docker logs mysql-db
+docker logs -f mysql-db
+docker container logs -f mysql-db
