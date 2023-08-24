@@ -33,5 +33,7 @@ override.tf.json
 .terraformrc
 terraform.rc
 
-# remove secrets
+# remove local custom folders
 **/secrets/*
+**/.vagrant/*
+

@@ -19,21 +19,28 @@ docker swarm init --advertise-addr 192.168.56.201:2377 --listen-addr 192.168.56.
 docker node ls
 
 ### Run this on all manager nodes - No need to run on worker nodes
-firewall-cmd --permanent --add-port=2377/tcp; firewall-cmd --reload; firewall-cmd --list-ports
+firewall-cmd --permanent --add-port=2377/tcp
+firewall-cmd --permanent --add-port=7946/tcp
+firewall-cmd --permanent --add-port=7946/udp
+firewall-cmd --permanent --add-port=4789/tcp
+firewall-cmd --reload
+firewall-cmd --list-ports
 
-### RUn this on first manager node
+### Run this on first manager node
 docker swarm join-token manager
 
 ### Run this on other manager nodes
 docker swarm join --token xxxxxx 192.168.56.201:2377
 
-### RUn this on first manager node
+### Run this on first manager node
 docker swarm join-token worker
 
 ### Run this on other worker nodes
 docker swarm join --token xxxxxxxxx 192.168.56.201:2377
 
+### To remove a node from the cluster
 docker node rm pn5ku2g3rplb3xyex3pl6eu0l
+
 
 ### Step 3 – Node management
 ### ===========================================
@@ -52,7 +59,6 @@ docker node inspect worker-1 | grep -i -A3 Labels
 
 docker node promote worker-1
 docker node demote worker-1
-
 
 docker swarm leave
 docker node rm worker-1
@@ -111,7 +117,7 @@ docker service create --name "lv-nginx" --network lv-network --publish published
 
 
 ### =======================================
-### Do a Rolling update
+### Do a Rolling upgrade
 ### =======================================
 
 ### Step 1 – Do a Rolling update
@@ -147,7 +153,7 @@ docker volume ls
 
 netstat -ntlp
 
-### on one of the runninn worker nodes
+### on one of the running worker nodes
 docker ps -a
 docker exec -it 739173ad7c10 /bin/bash
 df -h
@@ -163,7 +169,7 @@ docker service ps nginx-stack_lv-web-fe
 
 
 ### =======================================
-### Dockser Stared Storage
+### Dockser Storage
 ### =======================================
 
 ### These volumes are local. Only accessible with in the host

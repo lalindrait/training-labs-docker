@@ -20,7 +20,8 @@ echo 'lalindra        ALL=(ALL)       NOPASSWD: ALL' >> /etc/sudoers
 echo "[TASK 4] Install Docker"
 dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
+systemctl start docker
+systemctl enable docker
 
 echo "[TASK 5] Install packages"
 dnf install -y git
