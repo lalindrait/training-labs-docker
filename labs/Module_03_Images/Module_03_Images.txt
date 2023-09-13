@@ -137,7 +137,7 @@ Go to Docker Hub and get a new access token for your username.
 You can use your login password but using an access token is recommended 
 as it can be revoked at anytime and a new can be created.
 
-Clikd username (top right corner) --> Account Settings --> Security --> New Access Token
+Click username (top right corner) --> Account Settings --> Security --> New Access Token
 
 
 ### Step 2 – Push the image to Docker Hub
