@@ -10,6 +10,6 @@ RUN dnf install -y iproute && \
   dnf install -y nmap-ncat && \
   dnf install -y nginx && \
   rm -f /usr/share/nginx/html/index.html
-COPY ../files/index.html /usr/share/nginx/html/index.html
+COPY files/index.html /usr/share/nginx/html/index.html
 EXPOSE 80
 CMD ["/usr/sbin/nginx", "-g", "daemon off;"]
