@@ -7,5 +7,5 @@ RUN dnf install -y iproute && \
   dnf install -y iputils && \
   dnf install -y procps-ng && \
   dnf install -y telnet && \
-  dnf install -y nmap-ncat &&
+  dnf install -y nmap-ncat
 CMD ["/usr/sbin/nginx", "-g", "daemon off;"]
