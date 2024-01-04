@@ -5,6 +5,7 @@ LABEL Description="Rocky Linux With nginx"
 RUN dnf install -y iproute && \
   dnf install -y net-tools && \
   dnf install -y iputils && \
+  dnf install -y bind-utils && \
   dnf install -y procps-ng && \
   dnf install -y telnet && \
   dnf install -y nmap-ncat && \
